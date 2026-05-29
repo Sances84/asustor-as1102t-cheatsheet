@@ -1,10 +1,17 @@
-# AS1102T NAS cheatsheet
-__Disclaimer__. This project is made only for fun to control your NAS (AS1102T) on SSH.
-Note! For all .py files, requires Entware with installed Python.
-## For SSH:
-### ledset.sh utility
-Changing brightness in NAS remotely without changing in Asustor Data Manager:
-```
+# AS1102T NAS Cheatsheet
+
+> ⚠️ **Disclaimer:** This project is made only for fun to control your NAS (AS1102T) via SSH. Use at your own risk.
+> 
+> 💡 **Note:** All `.py` files require Entware with Python installed.
+
+---
+
+## 🛠️ SSH Utilities
+
+### 💡 ledset.sh
+Changes NAS LED brightness remotely without altering settings in the Asustor Data Manager.
+
+```sh
 #!/bin/sh
 if [ -z "$1" ]; then
     echo "Warning: ledset.sh <number of brightness>"
@@ -15,9 +22,11 @@ confutil -set /usr/etc/emboard.conf Led Brightness "$1"
 ledctrl -led_brightness $(confutil -get /usr/etc/emboard.conf Led Brightness)
 echo "Brightness set to $1 and saved in emboard.conf"
 ```
-### fancheck.sh (can be buggy or inaccurately count!)
-Open source replica to the `fanctrl -getfanspeed` made through exploring in strace with an command:
-```
+
+### 🌪️ fancheck.sh
+An open-source replica of `fanctrl -getfanspeed`, created by exploring `strace`. *Note: Can be buggy or slightly inaccurate.*
+
+```sh
 #!/bin/sh
 
 # Setup serial port - DISABLE ECHO is the most important part!
@@ -67,16 +76,40 @@ echo "Real RPM : $RPM"
 echo "Real PWM : $PWM %"
 echo "-------------------------------"
 ```
-#Emergency Reboot command, can be runned in the home with NAS (use at your risk, chance of the bios breaking i think is possible on force reboot):
-`ssh -p 22 -q -t (username)@(your local nas ip) "echo '(your password)' | sudo -S nohup /bin/sh -c '/usr/sbin/buzzctrl -shutdown & /usr/sbin/ledctrl -status blink4 & [ -f /usr/builtin/etc/init.d/rcK ] && /bin/sh /usr/builtin/etc/init.d/rcK || [ -f /etc/init.d/rcK ] && /bin/sh /etc/init.d/rcK; echo 1 > /proc/sys/kernel/sysrq; for x in e i s u; do echo \$x > /proc/sysrq-trigger; sleep 1; done; /sbin/reboot -f' > /dev/null 2>&1 &""` NOTE: If you are not home or outside the house where the internet router connection ends, and you use an shell in a box if you have it in NAS, use this:`sudo -S nohup /bin/sh -c '/usr/sbin/buzzctrl -shutdown & /usr/sbin/ledctrl -status blink4 & [ -f /usr/builtin/etc/init.d/rcK ] && /bin/sh /usr/builtin/etc/init.d/rcK || [ -f /etc/init.d/rcK ] && /bin/sh /etc/init.d/rcK; echo 1 > /proc/sys/kernel/sysrq; for x in e i s u; do echo \$x > /proc/sysrq-trigger; sleep 1; done; /sbin/reboot -f' > /dev/null 2>&1 &""`
 
-### Funny project-midibuzz.py
+---
+
+## 🚨 Emergency Reboot Commands
+
+> 💥 **Risk Warning:** Force rebooting carries a potential risk of breaking or corrupting the BIOS.
+
+### Option A: Running from Home (Local Network)
+```sh
+ssh -p 22 -q -t (username)@(your local nas ip) "echo '(your password)' | sudo -S nohup /bin/sh -c '/usr/sbin/buzzctrl -shutdown & /usr/sbin/ledctrl -status blink4 & [ -f /usr/builtin/etc/init.d/rcK ] && /bin/sh /usr/builtin/etc/init.d/rcK || [ -f /etc/init.d/rcK ] && /bin/sh /etc/init.d/rcK; echo 1 > /proc/sys/kernel/sysrq; for x in e i s u; do echo \$x > /proc/sysrq-trigger; sleep 1; done; /sbin/reboot -f' > /dev/null 2>&1 &"
 ```
+
+### Option B: Running Outside Home (via Shellinabox)
+Use this variant if you are connected outside your local router environment:
+```sh
+sudo -S nohup /bin/sh -c '/usr/sbin/buzzctrl -shutdown & /usr/sbin/ledctrl -status blink4 & [ -f /usr/builtin/etc/init.d/rcK ] && /bin/sh /usr/builtin/etc/init.d/rcK || [ -f /etc/init.d/rcK ] && /bin/sh /etc/init.d/rcK; echo 1 > /proc/sys/kernel/sysrq; for x in e i s u; do echo \$x > /proc/sysrq-trigger; sleep 1; done; /sbin/reboot -f' > /dev/null 2>&1 &
+```
+
+---
+
+## 🎹 Python Projects
+
+### midibuzz.py
+Converts a `.mid` (MIDI) file into a shell script output that plays the melody using the NAS internal buzzer.
+
+```bash
+pip install mido
+```
+
+```python
 import mido
 import sys
 import time
 
-# Path to your MIDI file
 if len(sys.argv) < 2:
     print("Usage: python3 midibuzz.py <file.mid>")
     sys.exit(1)
@@ -99,18 +132,23 @@ for msg in mid.play():
         # Stop Beep
         print('buzzctrl -disable poweron >/dev/null 2>&1')
 ```
-(requires to run `pip install mido`)
-Converts your .mid (MIDI) file into an output, that you should copy and paste to make all sh file.
-(try to test it into the https://gsarchive.net/html/sounds/test.mid from https://gsarchive.net/html/midi.html (it's example what you are can convert))
+
+* **Test Asset:** You can download a sample track from the [GS Archive Test MIDI](https://gsarchive.net/html/sounds/test.mid) hosted on the [GS Archive Index](https://gsarchive.net/html/midi.html).
+
 ### baycount.py
-```
+Retrieves the hard drive bay count configuration directly from the system files.
+
+```python
 import configparser
 
 config = configparser.ConfigParser()
 config.read('/etc/nas.conf')
 
-# Эквивалент функции Hal_Get_Platform_Bay_Count
+# Equivalent to the Hal_Get_Platform_Bay_Count function
 bay_count = config.getint('Disk', 'Number', fallback=0)
 print(f"Bay Count: {bay_count}")
 ```
-Run it and you are can see bay count.
+```text
+Output Example:
+Bay Count: 2
+```
