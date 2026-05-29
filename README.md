@@ -1,8 +1,9 @@
 # AS1102T NAS cheatsheet
 __Disclaimer__. This project is made only for fun to control your NAS (AS1102T) on SSH.
 Note! For all .py files, requires Entware with installed Python.
-# for SSH:
-# ledset.sh utility, changing brightness in NAS remotely without changing in Asustor Data Manager
+## For SSH:
+### ledset.sh utility
+Changing brightness in NAS remotely without changing in Asustor Data Manager:
 ```
 #!/bin/sh
 if [ -z "$1" ]; then
@@ -14,7 +15,8 @@ confutil -set /usr/etc/emboard.conf Led Brightness "$1"
 ledctrl -led_brightness $(confutil -get /usr/etc/emboard.conf Led Brightness)
 echo "Brightness set to $1 and saved in emboard.conf"
 ```
-# fancheck.sh (can be buggy) Open source replica to the `fanctrl -getfanspeed` made through exploring in strace with an command
+### fancheck.sh (can be buggy or inaccurately count!)
+Open source replica to the `fanctrl -getfanspeed` made through exploring in strace with an command:
 ```
 #!/bin/sh
 
@@ -68,7 +70,7 @@ echo "-------------------------------"
 #Emergency Reboot command, can be runned in the home with NAS (use at your risk, chance of the bios breaking i think is possible on force reboot):
 `ssh -p 22 -q -t (username)@(your local nas ip) "echo '(your password)' | sudo -S nohup /bin/sh -c '/usr/sbin/buzzctrl -shutdown & /usr/sbin/ledctrl -status blink4 & [ -f /usr/builtin/etc/init.d/rcK ] && /bin/sh /usr/builtin/etc/init.d/rcK || [ -f /etc/init.d/rcK ] && /bin/sh /etc/init.d/rcK; echo 1 > /proc/sys/kernel/sysrq; for x in e i s u; do echo \$x > /proc/sysrq-trigger; sleep 1; done; /sbin/reboot -f' > /dev/null 2>&1 &""` NOTE: If you are not home or outside the house where the internet router connection ends, and you use an shell in a box if you have it in NAS, use this:`sudo -S nohup /bin/sh -c '/usr/sbin/buzzctrl -shutdown & /usr/sbin/ledctrl -status blink4 & [ -f /usr/builtin/etc/init.d/rcK ] && /bin/sh /usr/builtin/etc/init.d/rcK || [ -f /etc/init.d/rcK ] && /bin/sh /etc/init.d/rcK; echo 1 > /proc/sys/kernel/sysrq; for x in e i s u; do echo \$x > /proc/sysrq-trigger; sleep 1; done; /sbin/reboot -f' > /dev/null 2>&1 &""`
 
-# Funny project-midibuzz.py
+### Funny project-midibuzz.py
 ```
 import mido
 import sys
@@ -100,7 +102,7 @@ for msg in mid.play():
 (requires to run `pip install mido`)
 Converts your .mid (MIDI) file into an output, that you should copy and paste to make all sh file.
 (try to test it into the https://gsarchive.net/html/sounds/test.mid from https://gsarchive.net/html/midi.html (it's example what you are can convert))
-# baycount.py
+### baycount.py
 ```
 import configparser
 
