@@ -1,6 +1,6 @@
 # AS1102T NAS Cheatsheet
 
-> ⚠️ **Disclaimer:** This project is made only for fun to control your NAS (AS1102T) via SSH. Use at your own risk. This project respects the ASUSTOR End User License Agreement (EULA). No proprietary binaries have been permanently modified, patched, or illegally re-distributed. We are explored proprietary binaries, then put into commands, can be not work on some models.
+> ⚠️ **Disclaimer:** This project is made only for fun to control your NAS (AS1102T) via SSH. Use at your own risk. This project respects the ASUSTOR End User License Agreement (EULA). No proprietary binaries have been permanently modified, patched, or illegally re-distributed. We are explored proprietary binaries, then put into commands, can be not work on some models of NAS.
 > 
 > 💡 **Note:** All `.py` files require Entware with Python installed.
 
