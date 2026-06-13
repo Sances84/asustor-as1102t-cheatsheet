@@ -77,6 +77,13 @@ echo "Real PWM : $PWM %"
 echo "-------------------------------"
 ```
 
+### Commands for reading NAS information
+Reading NAS serial number: `/usr/bin/confutil -get /etc/nas.conf Basic SerialNumber`<br>
+Reading NAS model name: `/usr/bin/confutil -get /etc/nas.conf Basic Model`<br>
+Reading NAS ADM version number: `/usr/bin/confutil -get /etc/nas.conf Basic Version`<br>
+Reading NAS MAC address with hyphens¹: `/usr/bin/confutil -get /etc/nas.conf Basic HostId`<br>
+¹ Note: Output should look like this example, NOTE! this is placeholder numbers to be an example: `12-34-56-78-A5-1G`
+
 ---
 
 ## 🚨 Emergency Reboot Commands
